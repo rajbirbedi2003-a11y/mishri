@@ -1,0 +1,75 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: lavender;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Segoe UI, sans-serif;
+  overflow: hidden;
+}
+
+/* FULL EMOJI GRID */
+
+.emoji-bg {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 50px);
+  grid-auto-rows: 50px;
+  place-items: center;
+  font-size: 28px;
+  opacity: 0.35;
+  z-index: 0;
+  animation: drift 30s linear infinite;
+}
+
+.container {
+  background: white;
+  padding: 40px 30px;
+  border-radius: 25px;
+  box-shadow: 0 15px 35px rgba(0,0,0,.15);
+  text-align: center;
+  position: relative;
+  z-index: 2;
+  max-width: 380px;
+  width: 90%;
+}
+
+h2 {
+  margin-bottom: 25px;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+button {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 30px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+#yesBtn {
+  background: linear-gradient(135deg,#7b5cff,#b38bff);
+  color: white;
+}
+
+#noBtn {
+  background: #ff6b6b;
+  color: white;
+  position: absolute;
+}
+
+@keyframes drift {
+  from { transform: translateY(0); }
+  to { transform: translateY(150px); }
+}

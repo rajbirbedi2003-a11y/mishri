@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yes or No</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="emoji-bg" id="emojiBg"></div>
+
+<div class="container">
+  <h2>Maanja Mishriiiii?</h2>
+
+  <div class="buttons">
+    <button id="yesBtn">Yes 💜</button>
+    <button id="noBtn">No 😅</button>
+  </div>
+</div>
+
+<script>
+const emojis = ["💜","✨","🌸","😄","💫","💕","🌈","🦋","⭐","😍","🌼"];
+const emojiBg = document.getElementById("emojiBg");
+
+// Fill whole screen with emojis
+for (let i = 0; i < 200; i++) {
+  const span = document.createElement("span");
+  span.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+  emojiBg.appendChild(span);
+}
+
+// No button logic
+const noBtn = document.getElementById("noBtn");
+const container = document.querySelector(".container");
+
+function moveNoButton() {
+  const rect = container.getBoundingClientRect();
+  noBtn.style.left = Math.random() * (rect.width - noBtn.offsetWidth) + "px";
+  noBtn.style.top = Math.random() * (rect.height - noBtn.offsetHeight) + "px";
+}
+
+noBtn.addEventListener("mouseenter", moveNoButton);
+noBtn.addEventListener("touchstart", moveNoButton);
+
+document.getElementById("yesBtn").onclick = () => {
+  window.location.href = "success.html";
+};
+</script>
+
+</body>
+
+</html>
