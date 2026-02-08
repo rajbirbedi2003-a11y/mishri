@@ -53,25 +53,48 @@ let noCount = 0;
 // Cute pop sound
 const pop = new Audio("https://www.myinstants.com/media/sounds/pop.mp3");
 
-function moveNo() {
+let escapeCount = 0;
+
+function moveNo(e) {
+  escapeCount++;
+
+  // 📳 Vibration (mobile only)
+  if (navigator.vibrate) {
+    navigator.vibrate(Math.min(50 + escapeCount * 20, 200));
+  }
+
+  // ✨ Trail
+  const trailEmojis = ["💨", "✨", "🦋"];
+  const trail = document.createElement("div");
+  trail.className = "trail";
+  trail.innerText = trailEmojis[Math.floor(Math.random() * trailEmojis.length)];
+  trail.style.left = noBtn.getBoundingClientRect().left + "px";
+  trail.style.top = noBtn.getBoundingClientRect().top + "px";
+  document.body.appendChild(trail);
+  setTimeout(() => trail.remove(), 1000);
+
+  // 😈 Fake click text
+  const fake = document.createElement("div");
+  fake.className = "fake-text";
+  fake.innerText = "Almost!";
+  fake.style.left = (e?.clientX || noBtn.offsetLeft) + "px";
+  fake.style.top = (e?.clientY || noBtn.offsetTop) + "px";
+  document.body.appendChild(fake);
+  setTimeout(() => fake.remove(), 800);
+
+  // 🏃 Move NO
   const w = window.innerWidth;
   const h = window.innerHeight;
 
   noBtn.style.position = "fixed";
-  noBtn.style.left = Math.random() * (w - 100) + "px";
-  noBtn.style.top = Math.random() * (h - 50) + "px";
+  noBtn.style.left = Math.random() * (w - 120) + "px";
+  noBtn.style.top = Math.random() * (h - 60) + "px";
 
-  // Rotate + fade NO
-  noCount++;
-  noBtn.style.transform = `rotate(${noCount * 15}deg)`;
-  noBtn.style.opacity = Math.max(0.3, 1 - noCount * 0.1);
-
-  // YES grows + moves center slowly
-  yesScale += 0.15;
+  // YES grows (keeps your current behavior)
+  yesScale += 0.12;
   yesBtn.style.transform = `scale(${yesScale})`;
-
-  msg.innerText = messages[Math.floor(Math.random()*messages.length)];
 }
+
 
 noBtn.addEventListener("mouseover", moveNo);
 noBtn.addEventListener("touchstart", moveNo);
