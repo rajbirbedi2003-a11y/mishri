@@ -12,7 +12,7 @@
 <div class="emoji-bg" id="emojiBg"></div>
 
 <div class="container">
-  <h2>Maanja Mishriiiii?</h2>
+  <h2>Maanja Mishri?</h2>
 
   <div class="buttons">
     <button id="yesBtn">Yes 💜</button>
@@ -24,30 +24,98 @@
 const emojis = ["💜","✨","🌸","😄","💫","💕","🌈","🦋","⭐","😍","🌼"];
 const emojiBg = document.getElementById("emojiBg");
 
-// Fill whole screen with emojis
-for (let i = 0; i < 200; i++) {
+for (let i = 0; i < 250; i++) {
   const span = document.createElement("span");
   span.textContent = emojis[Math.floor(Math.random() * emojis.length)];
   emojiBg.appendChild(span);
 }
 
-// No button logic
-const noBtn = document.getElementById("noBtn");
-const container = document.querySelector(".container");
+// Add message area
+const msg = document.createElement("div");
+msg.id = "msg";
+msg.innerText = "Go on… try No 😌";
+document.querySelector(".container").appendChild(msg);
 
-function moveNoButton() {
-  const rect = container.getBoundingClientRect();
-  noBtn.style.left = Math.random() * (rect.width - noBtn.offsetWidth) + "px";
-  noBtn.style.top = Math.random() * (rect.height - noBtn.offsetHeight) + "px";
+const messages = [
+  "Almost 😄",
+  "Still trying?",
+  "Just press Yes 💜",
+  "No is tired 😂",
+  "You know the answer 😏"
+];
+
+const yesBtn = document.getElementById("yesBtn");
+const noBtn = document.getElementById("noBtn");
+
+let yesScale = 1;
+let noCount = 0;
+
+// Cute pop sound
+const pop = new Audio("https://www.myinstants.com/media/sounds/pop.mp3");
+
+function moveNo() {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+
+  noBtn.style.position = "fixed";
+  noBtn.style.left = Math.random() * (w - 100) + "px";
+  noBtn.style.top = Math.random() * (h - 50) + "px";
+
+  // Rotate + fade NO
+  noCount++;
+  noBtn.style.transform = `rotate(${noCount * 15}deg)`;
+  noBtn.style.opacity = Math.max(0.3, 1 - noCount * 0.1);
+
+  // YES grows + moves center slowly
+  yesScale += 0.15;
+  yesBtn.style.transform = `scale(${yesScale})`;
+
+  msg.innerText = messages[Math.floor(Math.random()*messages.length)];
 }
 
-noBtn.addEventListener("mouseenter", moveNoButton);
-noBtn.addEventListener("touchstart", moveNoButton);
+noBtn.addEventListener("mouseover", moveNo);
+noBtn.addEventListener("touchstart", moveNo);
 
-document.getElementById("yesBtn").onclick = () => {
-  window.location.href = "success.html";
-};
+// YES follows cursor slightly
+document.addEventListener("mousemove", e => {
+  yesBtn.style.marginLeft = (e.clientX - window.innerWidth/2) * 0.01 + "px";
+});
+
+// Floating hearts on YES hover
+yesBtn.addEventListener("mouseenter", () => {
+  for(let i=0;i<3;i++){
+    const h = document.createElement("div");
+    h.className="heart";
+    h.innerText="💜";
+    h.style.left = yesBtn.getBoundingClientRect().left + "px";
+    h.style.top = yesBtn.getBoundingClientRect().top + "px";
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),2000);
+  }
+});
+
+// YES click → confetti + sound + next page
+yesBtn.addEventListener("click", () => {
+  pop.play();
+
+  for(let i=0;i<30;i++){
+    const c=document.createElement("div");
+    c.innerText="🎉";
+    c.style.position="fixed";
+    c.style.left=Math.random()*window.innerWidth+"px";
+    c.style.top=Math.random()*window.innerHeight+"px";
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),1500);
+  }
+
+  setTimeout(()=>{
+    window.location.href="success.html";
+  },600);
+});
 </script>
+
+
+
 
 </body>
 
