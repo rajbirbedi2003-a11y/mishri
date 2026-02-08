@@ -119,4 +119,33 @@ button {
   color: #666;
 }
 
+/* Fake click text */
+.fake-text {
+  position: fixed;
+  font-size: 16px;
+  color: #ff6b6b;
+  animation: fadeUp 0.8s ease forwards;
+  pointer-events: none;
+  z-index: 5;
+}
+
+@keyframes fadeUp {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-30px); }
+}
+
+/* NO trail */
+.trail {
+  position: fixed;
+  font-size: 16px;
+  opacity: 0.7;
+  animation: trailFade 1s ease forwards;
+  pointer-events: none;
+}
+
+@keyframes trailFade {
+  from { opacity: 0.7; }
+  to { opacity: 0; transform: scale(0.5); }
+}
+
 
