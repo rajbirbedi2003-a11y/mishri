@@ -21,6 +21,11 @@
 </div>
 
 <script>
+let alreadyClicked = false;
+
+const pop = new Audio("yes-sound.mp3");
+pop.preload = "auto";
+
 const emojis = ["💜","✨","🌸","😄","💫","💕","🌈","🦋","⭐","😍","🌼"];
 const emojiBg = document.getElementById("emojiBg");
 
@@ -36,53 +41,58 @@ msg.id = "msg";
 msg.innerText = "Go on… try No 😌";
 document.querySelector(".container").appendChild(msg);
 
+// Messages under Yes
 const messages = [
   "Almost 😄",
-  "Still trying?",
-  "Just press Yes 💜",
-  "No is tired 😂",
-  "You know the answer 😏"
+  "Nice try!",
+  "Still trying? 😏",
+  "No is getting tired 😂",
+  "Just press Yes 💜"
 ];
 
-const yesBtn = document.getElementById("yesBtn");
-const noBtn = document.getElementById("noBtn");
-
-let yesScale = 1;
-let noCount = 0;
-
-// Cute pop sound
-const pop = new Audio("https://www.myinstants.com/media/sounds/pop.mp3");
-
 let escapeCount = 0;
+let yesScale = 1;
 
+// NO button behavior
 function moveNo(e) {
   escapeCount++;
 
-  // 📳 Vibration (mobile only)
-  if (navigator.vibrate) {
-    navigator.vibrate(Math.min(50 + escapeCount * 20, 200));
+  // 🔤 Change text below Yes
+  const msg = document.getElementById("msg");
+  if (msg) {
+    msg.innerText = messages[Math.floor(Math.random() * messages.length)];
   }
 
-  // ✨ Trail
+  // 📳 VIBRATION — works only on touch
+  if (e && e.type === "touchstart" && navigator.vibrate) {
+    navigator.vibrate([60, 40, 60]);
+  }
+
+  // ✨ NO trail
   const trailEmojis = ["💨", "✨", "🦋"];
   const trail = document.createElement("div");
   trail.className = "trail";
-  trail.innerText = trailEmojis[Math.floor(Math.random() * trailEmojis.length)];
+  trail.innerText =
+    trailEmojis[Math.floor(Math.random() * trailEmojis.length)];
   trail.style.left = noBtn.getBoundingClientRect().left + "px";
   trail.style.top = noBtn.getBoundingClientRect().top + "px";
   document.body.appendChild(trail);
   setTimeout(() => trail.remove(), 1000);
 
   // 😈 Fake click text
-  const fake = document.createElement("div");
-  fake.className = "fake-text";
-  fake.innerText = "Almost!";
-  fake.style.left = (e?.clientX || noBtn.offsetLeft) + "px";
-  fake.style.top = (e?.clientY || noBtn.offsetTop) + "px";
-  document.body.appendChild(fake);
-  setTimeout(() => fake.remove(), 800);
+  if (e) {
+    const fake = document.createElement("div");
+    fake.className = "fake-text";
+    fake.innerText = "Almost!";
+    fake.style.left =
+      (e.touches ? e.touches[0].clientX : e.clientX) + "px";
+    fake.style.top =
+      (e.touches ? e.touches[0].clientY : e.clientY) + "px";
+    document.body.appendChild(fake);
+    setTimeout(() => fake.remove(), 800);
+  }
 
-  // 🏃 Move NO
+  // 🏃 Move NO instantly
   const w = window.innerWidth;
   const h = window.innerHeight;
 
@@ -90,51 +100,63 @@ function moveNo(e) {
   noBtn.style.left = Math.random() * (w - 120) + "px";
   noBtn.style.top = Math.random() * (h - 60) + "px";
 
-  // YES grows (keeps your current behavior)
+  // ⬆ YES grows
   yesScale += 0.12;
   yesBtn.style.transform = `scale(${yesScale})`;
 }
 
-
+// EVENTS (IMPORTANT)
 noBtn.addEventListener("mouseover", moveNo);
-noBtn.addEventListener("touchstart", moveNo);
 
-// YES follows cursor slightly
+// 📳 Touch event must call moveNo WITH event
+noBtn.addEventListener("touchstart", (e) => {
+  moveNo(e);
+});
+
+// YES follows cursor slightly (desktop only)
 document.addEventListener("mousemove", e => {
-  yesBtn.style.marginLeft = (e.clientX - window.innerWidth/2) * 0.01 + "px";
+  yesBtn.style.marginLeft =
+    (e.clientX - window.innerWidth / 2) * 0.01 + "px";
 });
 
-// Floating hearts on YES hover
-yesBtn.addEventListener("mouseenter", () => {
-  for(let i=0;i<3;i++){
-    const h = document.createElement("div");
-    h.className="heart";
-    h.innerText="💜";
-    h.style.left = yesBtn.getBoundingClientRect().left + "px";
-    h.style.top = yesBtn.getBoundingClientRect().top + "px";
-    document.body.appendChild(h);
-    setTimeout(()=>h.remove(),2000);
+// 💜 Floating hearts on YES hover
+yesBtn.addEventListener("click", async () => {
+  if (alreadyClicked) return; // 🔒 prevent double fire
+  alreadyClicked = true;
+
+  // Disable button visually
+  yesBtn.style.pointerEvents = "none";
+
+  // Start sound
+  pop.currentTime = 0;
+  try {
+    await pop.play();
+  } catch (e) {
+    // sound blocked — ignore
   }
-});
 
-// YES click → confetti + sound + next page
-yesBtn.addEventListener("click", () => {
-  pop.play();
-
-  for(let i=0;i<30;i++){
-    const c=document.createElement("div");
-    c.innerText="🎉";
-    c.style.position="fixed";
-    c.style.left=Math.random()*window.innerWidth+"px";
-    c.style.top=Math.random()*window.innerHeight+"px";
+  // 🎉 Confetti
+  for (let i = 0; i < 30; i++) {
+    const c = document.createElement("div");
+    c.innerText = "🎉";
+    c.style.position = "fixed";
+    c.style.left = Math.random() * window.innerWidth + "px";
+    c.style.top = Math.random() * window.innerHeight + "px";
     document.body.appendChild(c);
-    setTimeout(()=>c.remove(),1500);
+    setTimeout(() => c.remove(), 1500);
   }
 
-  setTimeout(()=>{
-    window.location.href="success.html";
-  },600);
+  // ⏳ Calculate REAL wait time
+  const soundDuration = isNaN(pop.duration) ? 2.5 : pop.duration;
+
+  // ✅ Wait for sound to ACTUALLY finish (with buffer)
+  setTimeout(() => {
+    window.location.href = "success.html";
+  }, (soundDuration * 1000) + 300);
 });
+
+
+
 </script>
 
 
